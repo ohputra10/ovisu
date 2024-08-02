@@ -31,7 +31,7 @@ RUN npm install -g npm@7 && \
     npm install -g node-gyp@7 && \
     npm install -g node-addon-api@5 && \
     npm install -g @mapbox/node-pre-gyp@1 \
-    npm install node-snap7; 
+    npm install node-snap7
 
 # Install dependencies and build node-odbc
 RUN npm ci --production && \
