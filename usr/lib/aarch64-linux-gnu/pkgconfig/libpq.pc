@@ -1,9 +1,0 @@
-Name: libpq
-Description: PostgreSQL libpq library
-Url: http://www.postgresql.org/
-Version: 11.19
-Requires: 
-Requires.private: 
-Cflags: -I/usr/include/postgresql
-Libs: -L/usr/lib/aarch64-linux-gnu -lpq
-Libs.private: -L/usr/lib/aarch64-linux-gnu/mit-krb5 -L/usr/lib/llvm-7/lib -lssl -lcrypto -lgssapi_krb5 -lcrypt -lldap_r
