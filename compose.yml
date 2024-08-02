@@ -1,0 +1,11 @@
+services:
+  fuxa:
+    image: ohputra/ovisu:latest
+    restart: unless-stopped
+    volumes:
+      - './appdata:/usr/src/app/ovisu/server/_appdata'
+      - './db:/usr/src/app/ovisu/server/_db'
+      - './logs:/usr/src/app/ovisu/server/_logs'
+      - './images:/usr/src/app/ovisu/server/_images'
+    ports:
+      - '1881:1881'
