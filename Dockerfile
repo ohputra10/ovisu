@@ -1,7 +1,5 @@
 FROM node:14-bullseye
 
-ARG NODE_SNAP=true
-
 RUN apt-get update && apt-get install -y dos2unix
 
 # Change working directory
@@ -10,20 +8,17 @@ WORKDIR /usr/src/app
 # Clone FUXA repository
 RUN git clone -b odbc https://github.com/ohputra10/ovisu.git
 
+# Copy odbcinst.ini to /etc
+RUN cp ovisu/odbc/odbcinst.ini /etc/odbcinst.ini
+
 # Install build dependencies for node-odbc
 RUN apt-get update && apt-get install -y build-essential unixodbc unixodbc-dev
 
 # Convert the script to Unix format and make it executable
 RUN dos2unix ovisu/odbc/install_odbc_drivers.sh && chmod +x ovisu/odbc/install_odbc_drivers.sh
 
-WORKDIR /usr/src/app/ovisu/odbc
-RUN ./install_odbc_drivers.sh
-
-# Change working directory
-WORKDIR /usr/src/app
-
-# Copy odbcinst.ini to /etc
-RUN cp ovisu/odbc/odbcinst.ini /etc/odbcinst.ini
+# Execute the script
+RUN ovisu/odbc/install_odbc_drivers.sh
 
 # Clone node-odbc repository
 RUN git clone https://github.com/markdirish/node-odbc.git
@@ -32,10 +27,11 @@ RUN git clone https://github.com/markdirish/node-odbc.git
 WORKDIR /usr/src/app/node-odbc
 
 # Install compatible versions of global npm packages
-RUN npm install -g node-gyp && \
-    npm install -g npm@8 && \
-    npm install -g node-addon-api && \
-    npm install -g @mapbox/node-pre-gyp
+RUN npm install -g npm@8 && \
+    npm install -g node-gyp@7 && \
+    npm install -g node-addon-api@5 && \
+    npm install -g @mapbox/node-pre-gyp@1 \
+    npm install node-snap7; 
 
 # Install dependencies and build node-odbc
 RUN npm ci --production && \
@@ -45,14 +41,18 @@ RUN npm ci --production && \
 # Build and install node-odbc
 #RUN npm install
 
+# Change working directory
+WORKDIR /usr/src/app
+
+# Clone FUXA repository
+#RUN git clone -b odbc https://github.com/frangoteam/FUXA.git
+
+# Change working directory to FUXA
+WORKDIR /usr/src/app/ovisu
+
 # Install Fuxa server
 WORKDIR /usr/src/app/ovisu/server
 RUN npm install
-
-# Install options snap7
-RUN if [ "$NODE_SNAP" = "true" ]; then \
-    npm install node-snap7; \
-    fi
 
 # Workaround for sqlite3 https://stackoverflow.com/questions/71894884/sqlite3-err-dlopen-failed-version-glibc-2-29-not-found
 RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev && \
